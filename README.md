@@ -140,7 +140,7 @@ or
     * Windows: It's complicated. See [this wiki page](https://github.com/ggreer/the_silver_searcher/wiki/Windows).
 2. Run the build script (which just runs aclocal, automake, etc):
 
-        ./build.sh
+        autoreconf && ./configure && make
 
    On Windows (inside an msys/MinGW shell):
 

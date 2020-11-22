@@ -1,0 +1,38 @@
+#
+# NOTE! Don't add files that are generated in specific
+# subdirectories here. Add them in the ".gitignore" file
+# in that subdirectory instead.
+#
+# Normal rules
+#
+.*
+*.rej
+*.orig
+*~
+*.patch
+*.diff
+*.o
+
+#
+# Generated files
+#
+*.depend
+*.log
+
+/Makefile*
+/aclocal.m4
+/autom4te.cache
+/config.status
+/configure
+/ag
+
+config.h
+stamp-h1
+
+#
+# Debian directory (make deb-pkg)
+#
+/debian/
+
+# cscope files
+cscope.*
