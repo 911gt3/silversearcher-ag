@@ -17,8 +17,8 @@
 #include "util.h"
 
 const char *color_line_number = "\033[1;33m"; /* bold yellow */
-const char *color_match = "\033[30;43m";      /* black with yellow background */
-const char *color_path = "\033[1;32m";        /* bold green */
+const char *color_match = "\033[1;31m";       /* bold magenta */
+const char *color_path = "\033[30;32m";       /* black with green background */
 
 /* TODO: try to obey out_fd? */
 void usage(void) {
@@ -36,13 +36,13 @@ Output Options:\n\
   -A --after [LINES]      Print lines after match (Default: 2)\n\
   -B --before [LINES]     Print lines before match (Default: 2)\n\
      --[no]break          Print newlines between matches in different files\n\
-                          (Enabled by default)\n\
+                          (Disabled by default)\n\
   -c --count              Only print the number of matches in each file.\n\
                           (This often differs from the number of matching lines)\n\
      --[no]color          Print color codes in results (Enabled by default)\n\
      --color-line-number  Color codes for line numbers (Default: 1;33)\n\
-     --color-match        Color codes for result match numbers (Default: 30;43)\n\
-     --color-path         Color codes for path names (Default: 1;32)\n\
+     --color-match        Color codes for result match numbers (Default: 1;31)\n\
+     --color-path         Color codes for path names (Default: 30;32)\n\
 ");
 #ifdef _WIN32
     printf("\
@@ -83,7 +83,7 @@ Search Options:\n\
   -a --all-types          Search all files (doesn't include hidden files\n\
                           or patterns from ignore files)\n\
   -D --debug              Ridiculous debugging (probably not useful)\n\
-     --depth NUM          Search up to NUM directories deep (Default: 25)\n\
+  -d --depth NUM          Search up to NUM directories deep (Default: 25)\n\
   -f --follow             Follow symlinks\n\
   -F --fixed-strings      Alias for --literal for compatibility with grep\n\
   -G --file-search-regex  PATTERN Limit search to filenames matching PATTERN\n\
@@ -205,7 +205,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     int path_len = 0;
     int base_path_len = 0;
     int useless = 0;
-    int group = 1;
+    int group = 0;
     int help = 0;
     int version = 0;
     int list_file_types = 0;
@@ -249,7 +249,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "context", optional_argument, NULL, 'C' },
         { "count", no_argument, NULL, 'c' },
         { "debug", no_argument, NULL, 'D' },
-        { "depth", required_argument, NULL, 0 },
+        { "depth", required_argument, NULL, 'd' },
         { "filename", no_argument, NULL, 0 },
         { "filename-pattern", required_argument, NULL, 'g' },
         { "file-search-regex", required_argument, NULL, 'G' },
@@ -372,7 +372,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     }
 
     char *file_search_regex = NULL;
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:nop:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDd:G:g:FfHhiLlm:nop:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
         switch (ch) {
             case 'A':
                 if (optarg) {
@@ -420,6 +420,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 break;
             case 'D':
                 set_log_level(LOG_LEVEL_DEBUG);
+                break;
+            case 'd':
+                opts.max_search_depth = atoi(optarg);
                 break;
             case 'f':
                 opts.follow_symlinks = 1;
@@ -517,9 +520,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 0: /* Long option */
                 if (strcmp(longopts[opt_index].name, "ackmate-dir-filter") == 0) {
                     compile_study(&opts.ackmate_dir_filter, &opts.ackmate_dir_filter_extra, optarg, 0, 0);
-                    break;
-                } else if (strcmp(longopts[opt_index].name, "depth") == 0) {
-                    opts.max_search_depth = atoi(optarg);
                     break;
                 } else if (strcmp(longopts[opt_index].name, "filename") == 0) {
                     opts.print_path = PATH_PRINT_DEFAULT;
