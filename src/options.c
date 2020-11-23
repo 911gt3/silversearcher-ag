@@ -17,7 +17,7 @@
 #include "util.h"
 
 const char *color_line_number = "\033[1;33m"; /* bold yellow */
-const char *color_match = "\033[1;31m";       /* bold magenta */
+const char *color_match = "\033[1;31m";       /* bold red */
 const char *color_path = "\033[30;32m";       /* black with green background */
 
 /* TODO: try to obey out_fd? */
